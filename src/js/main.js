@@ -1,21 +1,8 @@
-// /**
-//  * NutriPlan - Main Entry Point
-//  * 
-//  * This is the main entry point for the application.
-//  * Import your modules and initialize the app here.
-//  */
-
-
-
-/* =========================================================
-   NutriPlan App - نسخة جافا اسكربت مبسطة وواضحة
-   (بدون TypeScript وبدون أدوات بناء، أسماء متغيرات واضحة)
-   ========================================================= */
-
+ 
 /* ============ 1) MealDB API ============ */
-
+ 
 const MEALDB_API = "https://www.themealdb.com/api/json/v1/1";
-
+ 
 async function searchMealsByName(query) {
     try {
         const res = await fetch(`${MEALDB_API}/search.php?s=${encodeURIComponent(query)}`);
@@ -26,7 +13,7 @@ async function searchMealsByName(query) {
         return [];
     }
 }
-
+ 
 async function searchMealsByFirstLetter(letter) {
     try {
         const res = await fetch(`${MEALDB_API}/search.php?f=${letter}`);
@@ -37,7 +24,7 @@ async function searchMealsByFirstLetter(letter) {
         return [];
     }
 }
-
+ 
 async function filterMealsByIngredient(ingredient) {
     try {
         const res = await fetch(`${MEALDB_API}/filter.php?i=${encodeURIComponent(ingredient)}`);
@@ -48,7 +35,7 @@ async function filterMealsByIngredient(ingredient) {
         return [];
     }
 }
-
+ 
 async function filterMealsByCategory(category) {
     try {
         const res = await fetch(`${MEALDB_API}/filter.php?c=${encodeURIComponent(category)}`);
@@ -59,7 +46,7 @@ async function filterMealsByCategory(category) {
         return [];
     }
 }
-
+ 
 async function filterMealsByArea(area) {
     try {
         const res = await fetch(`${MEALDB_API}/filter.php?a=${encodeURIComponent(area)}`);
@@ -70,7 +57,7 @@ async function filterMealsByArea(area) {
         return [];
     }
 }
-
+ 
 async function getAllCategories() {
     try {
         const res = await fetch(`${MEALDB_API}/categories.php`);
@@ -81,7 +68,7 @@ async function getAllCategories() {
         return [];
     }
 }
-
+ 
 async function getCategoryList() {
     try {
         const res = await fetch(`${MEALDB_API}/list.php?c=list`);
@@ -92,7 +79,7 @@ async function getCategoryList() {
         return [];
     }
 }
-
+ 
 async function getAreaList() {
     try {
         const res = await fetch(`${MEALDB_API}/list.php?a=list`);
@@ -103,7 +90,7 @@ async function getAreaList() {
         return [];
     }
 }
-
+ 
 async function getIngredientList() {
     try {
         const res = await fetch(`${MEALDB_API}/list.php?i=list`);
@@ -114,7 +101,7 @@ async function getIngredientList() {
         return [];
     }
 }
-
+ 
 async function getMealById(id) {
     try {
         const res = await fetch(`${MEALDB_API}/lookup.php?i=${id}`);
@@ -125,7 +112,7 @@ async function getMealById(id) {
         return null;
     }
 }
-
+ 
 async function getRandomMeal() {
     try {
         const res = await fetch(`${MEALDB_API}/random.php`);
@@ -136,7 +123,7 @@ async function getRandomMeal() {
         return null;
     }
 }
-
+ 
 async function getMultipleRandomMeals(count = 5) {
     try {
         const requests = Array(count).fill().map(() => getRandomMeal());
@@ -147,7 +134,7 @@ async function getMultipleRandomMeals(count = 5) {
         return [];
     }
 }
-
+ 
 // يحول بيانات الوجبة القادمة من الـ API (strIngredient1..20) إلى مصفوفة مرتبة
 function extractIngredients(meal) {
     const ingredients = [];
@@ -163,12 +150,12 @@ function extractIngredients(meal) {
     }
     return ingredients;
 }
-
+ 
 function getIngredientThumbnail(name, size = "small") {
     const suffix = size === "medium" ? "-medium" : "-small";
     return `https://www.themealdb.com/images/ingredients/${encodeURIComponent(name)}${suffix}.png`;
 }
-
+ 
 // يحول نص التعليمات الخام إلى مصفوفة خطوات منظفة
 function parseInstructions(rawText) {
     if (!rawText) return [];
@@ -182,7 +169,7 @@ function parseInstructions(rawText) {
             return line.length > 5;
         });
 }
-
+ 
 const MealDB = {
     searchMealsByName,
     searchMealsByFirstLetter,
@@ -200,23 +187,23 @@ const MealDB = {
     getIngredientThumbnail,
     parseInstructions
 };
-
+ 
 /* ============ 2) Nutrition API ============ */
-
+ 
 const NUTRITION_API = "https://nutriplan-api.vercel.app/api";
 const NUTRITION_API_KEY = "xRGnhxcXrKuX8hJpeeQE5Rac9b7dyQDpaMs5fWFL";
 const nutritionCache = new Map();
-
+ 
 function clearNutritionCache() {
     nutritionCache.clear();
 }
-
+ 
 async function analyzeRecipe(recipeName, ingredientsList) {
     const cacheKey = `recipe_${recipeName}_${ingredientsList.join("|")}`;
     if (nutritionCache.has(cacheKey)) {
         return nutritionCache.get(cacheKey);
     }
-
+ 
     try {
         const res = await fetch(`${NUTRITION_API}/nutrition/analyze`, {
             method: "POST",
@@ -229,19 +216,19 @@ async function analyzeRecipe(recipeName, ingredientsList) {
                 ingredients: ingredientsList
             })
         });
-
+ 
         if (!res.ok) {
             const errorBody = await res.json().catch(() => ({}));
             console.error("❌ Nutrition API error:", errorBody);
             throw new Error(errorBody.error?.message || `API error: ${res.status}`);
         }
-
+ 
         const json = await res.json();
         if (!json.success) {
             console.error("❌ API returned failure:", json);
             throw new Error(json.error?.message || json.error || "Analysis failed");
         }
-
+ 
         const data = json.data;
         const result = {
             uri: `nutriplan://nutrition/${Date.now()}`,
@@ -275,7 +262,7 @@ async function analyzeRecipe(recipeName, ingredientsList) {
                 carbs: item.nutrition?.carbs || 0
             }))
         };
-
+ 
         nutritionCache.set(cacheKey, result);
         return result;
     } catch (err) {
@@ -283,7 +270,7 @@ async function analyzeRecipe(recipeName, ingredientsList) {
         return getFallbackNutritionData(recipeName, ingredientsList);
     }
 }
-
+ 
 // يحسب النسبة المئوية من الاحتياج اليومي الموصى به (على أساس نظام 2000 سعرة)
 function calculateDailyValues(totals) {
     const dailyTargets = {
@@ -296,7 +283,7 @@ function calculateDailyValues(totals) {
         cholesterol: 300,
         sodium: 2400
     };
-
+ 
     return {
         ENERC_KCAL: { label: "Energy", quantity: Math.round(totals.calories / dailyTargets.calories * 100), unit: "%" },
         FAT: { label: "Fat", quantity: Math.round(totals.fat / dailyTargets.fat * 100), unit: "%" },
@@ -308,12 +295,12 @@ function calculateDailyValues(totals) {
         NA: { label: "Sodium", quantity: Math.round(totals.sodium / dailyTargets.sodium * 100), unit: "%" }
     };
 }
-
+ 
 // بيانات احتياطية تقريبية في حال فشل الـ API
 function getFallbackNutritionData(recipeName, ingredientsList) {
     console.warn("⚠️ Using fallback nutrition data");
     const estimatedCalories = ingredientsList.length * 100;
-
+ 
     return {
         uri: `fallback://nutrition/${Date.now()}`,
         yield: 4,
@@ -346,15 +333,15 @@ function getFallbackNutritionData(recipeName, ingredientsList) {
         }))
     };
 }
-
+ 
 // يحول بيانات التغذية الخام إلى شكل جاهز للعرض (لكل حصة/وجبة)
 function formatNutritionForDisplay(nutritionData) {
     if (!nutritionData) return null;
-
+ 
     const servings = nutritionData.yield || 4;
     const perServing = nutritionData.perServing;
     const totals = nutritionData.totals;
-
+ 
     // الشكل الجديد (من نفس الـ API)
     if (perServing && totals) {
         return {
@@ -377,11 +364,11 @@ function formatNutritionForDisplay(nutritionData) {
             healthLabels: nutritionData.healthLabels || []
         };
     }
-
+ 
     // الشكل الاحتياطي (Edamam-like)
     const nutrients = nutritionData.totalNutrients || {};
     const dailyValues = nutritionData.totalDaily || {};
-
+ 
     return {
         servings,
         caloriesPerServing: Math.round((nutritionData.calories || 0) / servings),
@@ -420,7 +407,7 @@ function formatNutritionForDisplay(nutritionData) {
         healthLabels: nutritionData.healthLabels || []
     };
 }
-
+ 
 // يجمع إجمالي القيم الغذائية ليوم كامل من قائمة عناصر
 function calculateDayTotal(items = []) {
     const totals = { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 };
@@ -435,7 +422,7 @@ function calculateDayTotal(items = []) {
     }
     return totals;
 }
-
+ 
 async function getNutritionForItem(itemName) {
     const analysis = await analyzeRecipe("Single Item", [itemName]);
     if (analysis.ingredients && analysis.ingredients.length > 0) {
@@ -462,7 +449,7 @@ async function getNutritionForItem(itemName) {
     }
     return null;
 }
-
+ 
 async function searchFoods(query, page = 5) {
     try {
         const res = await fetch(`${NUTRITION_API}/nutrition/search?q=${encodeURIComponent(query)}&page=1`, {
@@ -476,7 +463,7 @@ async function searchFoods(query, page = 5) {
         return [];
     }
 }
-
+ 
 const NutritionAPI = {
     analyzeRecipe,
     formatNutritionForDisplay,
@@ -485,11 +472,11 @@ const NutritionAPI = {
     searchFoods,
     clearNutritionCache
 };
-
+ 
 /* ============ 3) Open Food Facts API (المنتجات المعبأة) ============ */
-
+ 
 const OFF_API = "https://world.openfoodfacts.org";
-
+ 
 async function searchProducts(options = {}) {
     try {
         const params = new URLSearchParams({
@@ -500,11 +487,11 @@ async function searchProducts(options = {}) {
             ...(options.categories && { categories_tags_en: options.categories }),
             ...(options.nutritionGrade && { nutrition_grades_tags: options.nutritionGrade })
         });
-
+ 
         const res = await fetch(`${OFF_API}/cgi/search.pl?${params}`);
         if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
         const data = await res.json();
-
+ 
         return {
             count: data.count || 0,
             page: data.page || 1,
@@ -516,7 +503,7 @@ async function searchProducts(options = {}) {
         return getMockProducts(options);
     }
 }
-
+ 
 async function getProductByBarcode(barcode) {
     try {
         const res = await fetch(`${OFF_API}/api/v0/product/${barcode}.json`);
@@ -528,7 +515,7 @@ async function getProductByBarcode(barcode) {
         return null;
     }
 }
-
+ 
 async function getProductsByCategory(category, page = 1, pageSize = 24) {
     try {
         const res = await fetch(`${OFF_API}/category/${encodeURIComponent(category)}.json?page=${page}&page_size=${pageSize}`);
@@ -544,7 +531,7 @@ async function getProductsByCategory(category, page = 1, pageSize = 24) {
         return { count: 0, page: 1, products: [] };
     }
 }
-
+ 
 async function getPopularCategories() {
     return [
         { id: "breakfast_cereals", name: "Breakfast Cereals", icon: "fa-wheat-awn" },
@@ -559,7 +546,7 @@ async function getPopularCategories() {
         { id: "sauces", name: "Sauces & Condiments", icon: "fa-jar" }
     ];
 }
-
+ 
 // يوحد شكل بيانات المنتج القادمة من Open Food Facts
 function normalizeProduct(product) {
     const nutriments = product.nutriments || {};
@@ -593,7 +580,7 @@ function normalizeProduct(product) {
         stores: product.stores || ""
     };
 }
-
+ 
 function getNutriScoreInfo(grade) {
     const grades = {
         a: { label: "Excellent", color: "#038141", description: "Very good nutritional quality" },
@@ -604,7 +591,7 @@ function getNutriScoreInfo(grade) {
     };
     return grades[grade?.toLowerCase()] || { label: "Unknown", color: "#999", description: "No score available" };
 }
-
+ 
 function getNovaGroupInfo(group) {
     const groups = {
         1: { label: "Unprocessed", color: "#038141", description: "Unprocessed or minimally processed foods" },
@@ -614,7 +601,7 @@ function getNovaGroupInfo(group) {
     };
     return groups[group] || { label: "Unknown", color: "#999", description: "No classification available" };
 }
-
+ 
 function calculateNutritionPerServing(product, servingGrams = 100) {
     const ratio = servingGrams / 100;
     const n = product.nutrition;
@@ -630,7 +617,7 @@ function calculateNutritionPerServing(product, servingGrams = 100) {
         sodium: Math.round(n.sodium * ratio)
     };
 }
-
+ 
 // بيانات وهمية احتياطية في حال فشل الاتصال بـ Open Food Facts
 function getMockProducts(options = {}) {
     let mockData = [
@@ -664,18 +651,18 @@ function getMockProducts(options = {}) {
             nutriments: { "energy-kcal_100g": 42, fat_100g: 0, carbohydrates_100g: 10.6, sugars_100g: 10.6, proteins_100g: 0, salt_100g: 0 }
         }
     ];
-
+ 
     if (options.searchTerms) {
         const term = options.searchTerms.toLowerCase();
         mockData = mockData.filter(p =>
             p.product_name.toLowerCase().includes(term) || p.brands.toLowerCase().includes(term)
         );
     }
-
+ 
     if (options.nutritionGrade) {
         mockData = mockData.filter(p => p.nutrition_grades === options.nutritionGrade.toLowerCase());
     }
-
+ 
     return {
         count: mockData.length,
         page: options.page || 1,
@@ -683,7 +670,7 @@ function getMockProducts(options = {}) {
         products: mockData.map(normalizeProduct)
     };
 }
-
+ 
 const OpenFoodFacts = {
     searchProducts,
     getProductByBarcode,
@@ -693,16 +680,16 @@ const OpenFoodFacts = {
     getNovaGroupInfo,
     calculateNutritionPerServing
 };
-
+ 
 /* ============ 4) إدارة الحالة (State) + التخزين المحلي ============ */
-
+ 
 const STORAGE_KEYS = {
     SAVED_RECIPES: "nutriplan_saved_recipes",
     DAILY_LOG: "nutriplan_daily_log",
     USER_SETTINGS: "nutriplan_user_settings",
     SHOPPING_LIST: "nutriplan_shopping_list"
 };
-
+ 
 const DEFAULT_SETTINGS = {
     calorieGoal: 2000,
     proteinGoal: 50,
@@ -723,7 +710,7 @@ const DEFAULT_SETTINGS = {
     weekStart: "monday",
     measurementUnit: "metric"
 };
-
+ 
 // الحالة العامة للتطبيق (بديل لأي مكتبة إدارة حالة)
 const state = {
     currentPage: "meals",
@@ -738,36 +725,36 @@ const state = {
     isLoading: false,
     error: null
 };
-
+ 
 function initializeState() {
     const savedSettings = localStorage.getItem(STORAGE_KEYS.USER_SETTINGS);
     state.userSettings = savedSettings ? JSON.parse(savedSettings) : { ...DEFAULT_SETTINGS };
-
+ 
     const savedRecipes = localStorage.getItem(STORAGE_KEYS.SAVED_RECIPES);
     state.savedRecipes = savedRecipes ? JSON.parse(savedRecipes) : [];
-
+ 
     const dailyLog = localStorage.getItem(STORAGE_KEYS.DAILY_LOG);
     state.dailyLog = dailyLog ? JSON.parse(dailyLog) : {};
-
+ 
     const shoppingList = localStorage.getItem(STORAGE_KEYS.SHOPPING_LIST);
     state.shoppingList = shoppingList ? JSON.parse(shoppingList) : [];
-
+ 
     state.streaks = calculateStreaks(state.dailyLog);
     return state;
 }
-
+ 
 // يحسب أطول سلسلة أيام متتالية تم تسجيل تغذية فيها
 function calculateStreaks(dailyLog) {
     const today = new Date();
     let currentStreak = 0;
     let bestStreak = 0;
-
+ 
     for (let i = 0; i < 365; i++) {
         const day = new Date(today);
         day.setDate(day.getDate() - i);
         const dayKey = day.toISOString().split("T")[0];
         const dayLog = dailyLog[dayKey];
-
+ 
         if (dayLog && dayLog.totalCalories > 0) {
             if (i === currentStreak) currentStreak++;
             bestStreak = Math.max(bestStreak, currentStreak);
@@ -775,18 +762,18 @@ function calculateStreaks(dailyLog) {
             break;
         }
     }
-
+ 
     return { nutrition: currentStreak, maxNutrition: bestStreak };
 }
-
+ 
 function getState() {
     return state;
 }
-
+ 
 // يحدّث الحالة، ويحفظ في localStorage عند الطلب، ويطلق حدث تغيير
 function updateState(changes, persist = false) {
     Object.assign(state, changes);
-
+ 
     if (persist) {
         if (changes.savedRecipes !== undefined) {
             localStorage.setItem(STORAGE_KEYS.SAVED_RECIPES, JSON.stringify(state.savedRecipes));
@@ -801,10 +788,10 @@ function updateState(changes, persist = false) {
             localStorage.setItem(STORAGE_KEYS.SHOPPING_LIST, JSON.stringify(state.shoppingList));
         }
     }
-
+ 
     window.dispatchEvent(new CustomEvent("stateChange", { detail: changes }));
 }
-
+ 
 function saveRecipe(meal) {
     const alreadySaved = state.savedRecipes.some(r => r.idMeal === meal.idMeal);
     if (!alreadySaved) {
@@ -812,16 +799,16 @@ function saveRecipe(meal) {
         updateState({ savedRecipes: state.savedRecipes }, true);
     }
 }
-
+ 
 function unsaveRecipe(mealId) {
     state.savedRecipes = state.savedRecipes.filter(r => r.idMeal !== mealId);
     updateState({ savedRecipes: state.savedRecipes }, true);
 }
-
+ 
 function isRecipeSaved(mealId) {
     return state.savedRecipes.some(r => r.idMeal === mealId);
 }
-
+ 
 function logDailyNutrition(dateKey, entry) {
     if (!state.dailyLog[dateKey]) {
         state.dailyLog[dateKey] = { meals: [], totalCalories: 0, totalProtein: 0, totalCarbs: 0, totalFat: 0, water: 0 };
@@ -833,7 +820,7 @@ function logDailyNutrition(dateKey, entry) {
     state.dailyLog[dateKey].totalFat += entry.fat || 0;
     updateState({ dailyLog: state.dailyLog }, true);
 }
-
+ 
 function logWaterIntake(dateKey, amountMl) {
     if (!state.dailyLog[dateKey]) {
         state.dailyLog[dateKey] = { meals: [], totalCalories: 0, totalProtein: 0, totalCarbs: 0, totalFat: 0, water: 0, waterLog: [] };
@@ -843,13 +830,13 @@ function logWaterIntake(dateKey, amountMl) {
     state.dailyLog[dateKey].waterLog.push({ amount: amountMl, time: new Date().toISOString() });
     updateState({ dailyLog: state.dailyLog }, true);
 }
-
+ 
 function getTodayWaterIntake() {
     const todayKey = getTodayString();
     const todayLog = state.dailyLog[todayKey] || { water: 0, waterLog: [] };
     const goal = state.userSettings.waterGoal;
     const glassSize = state.userSettings.waterGlassSize;
-
+ 
     return {
         current: todayLog.water || 0,
         goal,
@@ -860,18 +847,18 @@ function getTodayWaterIntake() {
         log: todayLog.waterLog || []
     };
 }
-
+ 
 function logWaterGlass() {
     const todayKey = getTodayString();
     const glassSize = state.userSettings.waterGlassSize;
     logWaterIntake(todayKey, glassSize);
     return getTodayWaterIntake();
 }
-
+ 
 function getDailyProgress(dateKey) {
     const dayLog = state.dailyLog[dateKey] || { totalCalories: 0, totalProtein: 0, totalCarbs: 0, totalFat: 0, water: 0 };
     const settings = state.userSettings;
-
+ 
     return {
         calories: Math.min(100, Math.round(dayLog.totalCalories / settings.calorieGoal * 100)),
         protein: Math.min(100, Math.round(dayLog.totalProtein / settings.proteinGoal * 100)),
@@ -881,7 +868,7 @@ function getDailyProgress(dateKey) {
         overall: 0
     };
 }
-
+ 
 function addToShoppingList(items) {
     items.forEach(item => {
         const exists = state.shoppingList.some(
@@ -898,7 +885,7 @@ function addToShoppingList(items) {
     });
     updateState({ shoppingList: state.shoppingList }, true);
 }
-
+ 
 function toggleShoppingItem(itemId) {
     const item = state.shoppingList.find(i => i.id === itemId);
     if (item) {
@@ -906,26 +893,26 @@ function toggleShoppingItem(itemId) {
         updateState({ shoppingList: state.shoppingList }, true);
     }
 }
-
+ 
 function removeFromShoppingList(itemId) {
     state.shoppingList = state.shoppingList.filter(i => i.id !== itemId);
     updateState({ shoppingList: state.shoppingList }, true);
 }
-
+ 
 function clearCompletedShoppingItems() {
     state.shoppingList = state.shoppingList.filter(i => !i.checked);
     updateState({ shoppingList: state.shoppingList }, true);
 }
-
+ 
 function updateUserSettings(newSettings) {
     state.userSettings = { ...state.userSettings, ...newSettings };
     updateState({ userSettings: state.userSettings }, true);
 }
-
+ 
 function getTodayString() {
     return new Date().toISOString().split("T")[0];
 }
-
+ 
 function getWeeklySummary() {
     const today = new Date();
     const last7Days = [];
@@ -940,22 +927,22 @@ function getWeeklySummary() {
         nutrition: state.dailyLog[dateKey] || { totalCalories: 0 }
     }));
 }
-
+ 
 function getBMI() {
     const { weight, height } = state.userSettings;
     if (!weight || !height) return null;
-
+ 
     const heightInMeters = height / 100;
     const bmiValue = weight / (heightInMeters * heightInMeters);
-
+ 
     let category = "Normal";
     if (bmiValue < 18.5) category = "Underweight";
     else if (bmiValue >= 25 && bmiValue < 30) category = "Overweight";
     else if (bmiValue >= 30) category = "Obese";
-
+ 
     return { value: bmiValue.toFixed(1), category };
 }
-
+ 
 function getTotalStats() {
     const savedRecipesCount = state.savedRecipes?.length || 0;
     const plannedMealsCount = Object.values(state.mealPlan || {}).reduce(
@@ -963,7 +950,7 @@ function getTotalStats() {
     );
     const shoppingItemsCount = state.shoppingList?.length || 0;
     const workoutsLoggedCount = Object.keys(state.workoutLog || {}).length;
-
+ 
     return {
         savedRecipes: savedRecipesCount,
         plannedMeals: plannedMealsCount,
@@ -971,7 +958,7 @@ function getTotalStats() {
         workoutsLogged: workoutsLoggedCount
     };
 }
-
+ 
 const AppState = {
     initializeState,
     getState,
@@ -994,9 +981,9 @@ const AppState = {
     getBMI,
     getTotalStats
 };
-
+ 
 /* ============ 5) قوالب واجهة المستخدم (HTML Templates) ============ */
-
+ 
 function createMealCard(meal) {
     return `
         <div class="recipe-card bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all cursor-pointer group" data-meal-id="${meal.idMeal}">
@@ -1041,7 +1028,7 @@ function createMealCard(meal) {
         </div>
     `;
 }
-
+ 
 const CATEGORY_STYLES = {
     Beef: { bg: "from-red-50 to-rose-50", border: "border-red-200 hover:border-red-400", iconFrom: "from-red-400", iconTo: "to-rose-500", text: "text-red-600" },
     Chicken: { bg: "from-amber-50 to-orange-50", border: "border-amber-200 hover:border-amber-400", iconFrom: "from-amber-400", iconTo: "to-orange-500", text: "text-amber-600" },
@@ -1058,18 +1045,18 @@ const CATEGORY_STYLES = {
     Breakfast: { bg: "from-amber-50 to-orange-50", border: "border-amber-200 hover:border-amber-400", iconFrom: "from-amber-400", iconTo: "to-orange-500", text: "text-amber-600" },
     Goat: { bg: "from-stone-50 to-amber-50", border: "border-stone-200 hover:border-stone-400", iconFrom: "from-stone-400", iconTo: "to-amber-500", text: "text-stone-600" }
 };
-
+ 
 const CATEGORY_ICONS = {
     Beef: "fa-drumstick-bite", Chicken: "fa-drumstick-bite", Dessert: "fa-cake-candles",
     Lamb: "fa-drumstick-bite", Pasta: "fa-bowl-food", Pork: "fa-bacon", Seafood: "fa-fish",
     Side: "fa-plate-wheat", Starter: "fa-utensils", Vegan: "fa-leaf", Vegetarian: "fa-seedling",
     Breakfast: "fa-mug-hot", Miscellaneous: "fa-bowl-rice", Goat: "fa-drumstick-bite"
 };
-
+ 
 function createCategoryCard(category) {
     const style = CATEGORY_STYLES[category.strCategory] || CATEGORY_STYLES.Miscellaneous;
     const icon = CATEGORY_ICONS[category.strCategory] || "fa-utensils";
-
+ 
     return `
         <div class="category-card bg-gradient-to-br ${style.bg} rounded-xl p-3 border ${style.border} hover:shadow-md cursor-pointer transition-all group" data-category="${category.strCategory}">
             <div class="flex items-center gap-2.5">
@@ -1083,7 +1070,7 @@ function createCategoryCard(category) {
         </div>
     `;
 }
-
+ 
 function createLoadingSpinner() {
     return `
         <div class="flex items-center justify-center py-12">
@@ -1091,7 +1078,7 @@ function createLoadingSpinner() {
         </div>
     `;
 }
-
+ 
 function createEmptyState(message, icon = "fa-search") {
     return `
         <div class="flex flex-col items-center justify-center py-12 text-center">
@@ -1102,7 +1089,7 @@ function createEmptyState(message, icon = "fa-search") {
         </div>
     `;
 }
-
+ 
 function createAreaFilters(areas, selectedArea = null) {
     return `
         <button class="area-filter-btn px-4 py-2 ${selectedArea ? "bg-gray-100 text-gray-700" : "bg-emerald-600 text-white"} rounded-full font-medium text-sm whitespace-nowrap hover:bg-emerald-700 hover:text-white transition-all" data-area="">
@@ -1115,7 +1102,7 @@ function createAreaFilters(areas, selectedArea = null) {
         `).join("")}
     `;
 }
-
+ 
 function createWaterTracker(waterInfo) {
     const { current, goal, glasses, targetGlasses, percentage } = waterInfo;
     const glassesHTML = Array(targetGlasses).fill(0).map((_, i) => `
@@ -1125,7 +1112,7 @@ function createWaterTracker(waterInfo) {
             ${i < glasses ? '<i class="fa-solid fa-droplet text-white text-xs mb-1"></i>' : ""}
         </div>
     `).join("");
-
+ 
     return `
         <div class="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-2xl p-6 border border-blue-200">
             <div class="flex items-center justify-between mb-4">
@@ -1140,15 +1127,15 @@ function createWaterTracker(waterInfo) {
                 </div>
                 <span class="text-2xl font-bold text-blue-600">${percentage}%</span>
             </div>
-
+ 
             <div class="w-full bg-gray-200 rounded-full h-3 mb-4">
                 <div class="bg-gradient-to-r from-blue-400 to-cyan-500 h-3 rounded-full transition-all duration-500" style="width: ${percentage}%"></div>
             </div>
-
+ 
             <div class="flex items-center gap-2 flex-wrap mb-4">
                 ${glassesHTML}
             </div>
-
+ 
             <button id="add-water-btn" class="w-full py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 transition-all flex items-center justify-center gap-2">
                 <i class="fa-solid fa-plus"></i>
                 Add Glass (${waterInfo.glassSize}ml)
@@ -1156,7 +1143,7 @@ function createWaterTracker(waterInfo) {
         </div>
     `;
 }
-
+ 
 function createSkeletonCard(type = "recipe") {
     if (type === "recipe") {
         return `
@@ -1187,13 +1174,13 @@ function createSkeletonCard(type = "recipe") {
     }
     return "";
 }
-
+ 
 function createProductCard(product) {
     const gradeColors = { a: "bg-green-500", b: "bg-lime-500", c: "bg-yellow-500", d: "bg-orange-500", e: "bg-red-500" };
     const novaColors = { 1: "bg-green-500", 2: "bg-lime-500", 3: "bg-orange-500", 4: "bg-red-500" };
     const gradeColor = gradeColors[product.nutritionGrade?.toLowerCase()] || "bg-gray-400";
     const novaColor = novaColors[product.novaGroup] || "bg-gray-400";
-
+ 
     return `
         <div class="product-card bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all cursor-pointer group" data-barcode="${product.barcode}">
             <div class="relative h-40 bg-gray-100 flex items-center justify-center overflow-hidden">
@@ -1221,18 +1208,18 @@ function createProductCard(product) {
                     </div>
                 ` : ""}
             </div>
-
+ 
             <div class="p-4">
                 <p class="text-xs text-emerald-600 font-semibold mb-1 truncate">${product.brand || "Unknown Brand"}</p>
                 <h3 class="font-bold text-gray-900 mb-2 line-clamp-2 group-hover:text-emerald-600 transition-colors">
                     ${product.name}
                 </h3>
-
+ 
                 <div class="flex items-center gap-3 text-xs text-gray-500 mb-3">
                     ${product.quantity ? `<span><i class="fa-solid fa-weight-scale mr-1"></i>${product.quantity}</span>` : ""}
                     ${product.nutrition?.calories ? `<span><i class="fa-solid fa-fire mr-1"></i>${Math.round(product.nutrition.calories)} kcal/100g</span>` : ""}
                 </div>
-
+ 
                 <div class="grid grid-cols-4 gap-1 text-center">
                     <div class="bg-emerald-50 rounded p-1.5">
                         <p class="text-xs font-bold text-emerald-700">${product.nutrition?.protein?.toFixed(1) || 0}g</p>
@@ -1255,7 +1242,7 @@ function createProductCard(product) {
         </div>
     `;
 }
-
+ 
 function createProductDetailContent(product, gradeInfo, novaInfo) {
     return `
         <div class="p-6">
@@ -1267,7 +1254,7 @@ function createProductDetailContent(product, gradeInfo, novaInfo) {
                     <p class="text-sm text-emerald-600 font-semibold mb-1">${product.brand || "Unknown Brand"}</p>
                     <h2 class="text-2xl font-bold text-gray-900 mb-2">${product.name}</h2>
                     <p class="text-sm text-gray-500 mb-3">${product.quantity || ""}</p>
-
+ 
                     <div class="flex items-center gap-3">
                         ${product.nutritionGrade ? `
                             <div class="flex items-center gap-2 px-3 py-1.5 rounded-lg" style="background-color: ${gradeInfo.color}20">
@@ -1297,18 +1284,18 @@ function createProductDetailContent(product, gradeInfo, novaInfo) {
                     <i class="fa-solid fa-times text-2xl"></i>
                 </button>
             </div>
-
+ 
             <div class="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-xl p-5 mb-6 border border-emerald-200">
                 <h3 class="font-bold text-gray-900 mb-4 flex items-center gap-2">
                     <i class="fa-solid fa-chart-pie text-emerald-600"></i>
                     Nutrition Facts <span class="text-sm font-normal text-gray-500">(per 100g)</span>
                 </h3>
-
+ 
                 <div class="text-center mb-4 pb-4 border-b border-emerald-200">
                     <p class="text-4xl font-bold text-gray-900">${Math.round(product.nutrition?.calories || 0)}</p>
                     <p class="text-sm text-gray-500">Calories</p>
                 </div>
-
+ 
                 <div class="grid grid-cols-4 gap-4">
                     <div class="text-center">
                         <div class="w-full bg-gray-200 rounded-full h-2 mb-2">
@@ -1339,7 +1326,7 @@ function createProductDetailContent(product, gradeInfo, novaInfo) {
                         <p class="text-xs text-gray-500">Sugar</p>
                     </div>
                 </div>
-
+ 
                 <div class="grid grid-cols-3 gap-4 mt-4 pt-4 border-t border-emerald-200">
                     <div class="text-center">
                         <p class="text-sm font-semibold text-gray-900">${product.nutrition?.saturatedFat?.toFixed(1) || 0}g</p>
@@ -1355,7 +1342,7 @@ function createProductDetailContent(product, gradeInfo, novaInfo) {
                     </div>
                 </div>
             </div>
-
+ 
             ${product.ingredients ? `
                 <div class="bg-gray-50 rounded-xl p-5 mb-6">
                     <h3 class="font-bold text-gray-900 mb-3 flex items-center gap-2">
@@ -1365,7 +1352,7 @@ function createProductDetailContent(product, gradeInfo, novaInfo) {
                     <p class="text-sm text-gray-600 leading-relaxed">${product.ingredients}</p>
                 </div>
             ` : ""}
-
+ 
             ${product.allergens ? `
                 <div class="bg-red-50 rounded-xl p-5 mb-6 border border-red-200">
                     <h3 class="font-bold text-red-700 mb-2 flex items-center gap-2">
@@ -1375,7 +1362,7 @@ function createProductDetailContent(product, gradeInfo, novaInfo) {
                     <p class="text-sm text-red-600">${product.allergens}</p>
                 </div>
             ` : ""}
-
+ 
             <div class="flex gap-3">
                 <button class="add-product-to-log flex-1 py-3 bg-emerald-600 text-white rounded-xl font-semibold hover:bg-emerald-700 transition-all" data-barcode="${product.barcode}">
                     <i class="fa-solid fa-plus mr-2"></i>Log This Food
@@ -1387,7 +1374,7 @@ function createProductDetailContent(product, gradeInfo, novaInfo) {
         </div>
     `;
 }
-
+ 
 const PRODUCT_CATEGORY_COLORS = {
     breakfast_cereals: "from-amber-500 to-orange-500",
     beverages: "from-blue-500 to-cyan-500",
@@ -1400,7 +1387,7 @@ const PRODUCT_CATEGORY_COLORS = {
     frozen_foods: "from-cyan-500 to-blue-600",
     sauces: "from-orange-500 to-red-500"
 };
-
+ 
 function createProductCategoryButton(category) {
     const colorClasses = PRODUCT_CATEGORY_COLORS[category.id] || "from-gray-500 to-gray-600";
     return `
@@ -1409,7 +1396,7 @@ function createProductCategoryButton(category) {
         </button>
     `;
 }
-
+ 
 const Templates = {
     createMealCard,
     createCategoryCard,
@@ -1422,9 +1409,9 @@ const Templates = {
     createProductDetailContent,
     createProductCategoryButton
 };
-
+ 
 /* ============ 6) التطبيق الرئيسي (Router + UI logic) ============ */
-
+ 
 class NutriPlanApp {
     constructor() {
         this.state = AppState.initializeState();
@@ -1439,17 +1426,17 @@ class NutriPlanApp {
         };
         this.init();
     }
-
+ 
     async init() {
         this.setupEventListeners();
         this.setupRouting();
-
+ 
         if (window.location.pathname === "/" || window.location.pathname === "") {
             window.history.replaceState({ page: "meals" }, "", "/home");
         }
-
+ 
         await this.loadInitialData();
-
+ 
         const currentRoute = this.getPageFromURL();
         if (currentRoute.type === "meal-detail" && currentRoute.slug) {
             await this.loadMealFromSlug(currentRoute.slug);
@@ -1457,10 +1444,10 @@ class NutriPlanApp {
             this.renderPage(currentRoute.type);
             this.updateActiveNavLink(currentRoute.type);
         }
-
+ 
         this.hideLoadingOverlay();
     }
-
+ 
     setupRouting() {
         window.addEventListener("popstate", () => {
             const route = this.getPageFromURL();
@@ -1472,7 +1459,7 @@ class NutriPlanApp {
             }
         });
     }
-
+ 
     getPageFromURL() {
         const path = window.location.pathname.replace(/^\//, "").replace(/\/$/, "");
         if (path.startsWith("meal/")) {
@@ -1480,7 +1467,7 @@ class NutriPlanApp {
         }
         return { type: this.routes[path] || "meals", slug: null };
     }
-
+ 
     async loadMealFromSlug(slug) {
         try {
             const query = slug.replace(/-/g, " ");
@@ -1498,14 +1485,14 @@ class NutriPlanApp {
             this.navigateTo("meals");
         }
     }
-
+ 
     slugify(text) {
         return text.toLowerCase().trim()
             .replace(/[^\w\s-]/g, "")
             .replace(/[\s_-]+/g, "-")
             .replace(/^-+|-+$/g, "");
     }
-
+ 
     navigateTo(page) {
         let path;
         if (page === "meals") {
@@ -1519,7 +1506,7 @@ class NutriPlanApp {
         this.renderPage(page);
         this.updateActiveNavLink(page);
     }
-
+ 
     navigateToMeal(meal) {
         const path = `/meal/${this.slugify(meal.strMeal)}`;
         AppState.updateState({ selectedMealId: meal.idMeal });
@@ -1527,7 +1514,7 @@ class NutriPlanApp {
         this.renderPage("meal-detail");
         this.updateActiveNavLink("meals");
     }
-
+ 
     updateActiveNavLink(activePage) {
         document.querySelectorAll("#sidebar nav a").forEach(link => {
             const label = link.querySelector("span")?.textContent?.toLowerCase() || "";
@@ -1536,7 +1523,7 @@ class NutriPlanApp {
             else if (label.includes("settings")) page = "settings";
             else if (label.includes("products") || label.includes("barcode") || label.includes("scan")) page = "products";
             else if (label.includes("food log") || label.includes("log")) page = "foodlog";
-
+ 
             if (page === activePage) {
                 link.classList.add("bg-emerald-50", "text-emerald-700");
                 link.classList.remove("text-gray-600", "hover:bg-gray-50");
@@ -1550,7 +1537,7 @@ class NutriPlanApp {
             }
         });
     }
-
+ 
     hideLoadingOverlay() {
         const overlay = document.getElementById("app-loading-overlay");
         if (overlay) {
@@ -1559,12 +1546,12 @@ class NutriPlanApp {
             setTimeout(() => overlay.remove(), 500);
         }
     }
-
+ 
     setupEventListeners() {
         document.querySelectorAll("#sidebar nav a").forEach(link => {
             link.addEventListener("click", e => this.handleNavigation(e));
         });
-
+ 
         const searchInput = document.querySelector('#search-filters-section input[type="text"]');
         if (searchInput) {
             searchInput.addEventListener("input", e => this.handleSearch(e));
@@ -1572,12 +1559,13 @@ class NutriPlanApp {
                 if (e.key === "Enter") this.performSearch(e.target.value);
             });
         }
-
+ 
         this.setupViewToggle();
+        this.setupMobileSidebar();
         document.addEventListener("click", e => this.handleGlobalClick(e));
         window.addEventListener("stateChange", e => this.handleStateChange(e));
     }
-
+ 
     setupViewToggle() {
         const gridBtn = document.getElementById("grid-view-btn");
         const listBtn = document.getElementById("list-view-btn");
@@ -1586,19 +1574,83 @@ class NutriPlanApp {
             listBtn.addEventListener("click", () => this.setViewMode("list"));
         }
     }
-
+ 
+    // يفتح ويقفل السايدبار في الشاشات الصغيرة (موبايل/تابلت)
+    // بيشتغل بالـ inline styles علشان ميعتمدش على أسامي كلاسات معينة في ملفات الـ CSS
+    setupMobileSidebar() {
+        const menuBtn = document.getElementById("header-menu-btn");
+        const closeBtn = document.getElementById("sidebar-close-btn");
+        const overlay = document.getElementById("sidebar-overlay");
+        const sidebar = document.getElementById("sidebar");
+ 
+        if (!menuBtn || !overlay || !sidebar) return;
+ 
+        const isMobileView = () => window.innerWidth < 1024;
+ 
+        const openSidebar = () => {
+            sidebar.classList.add("sidebar-open");
+            overlay.classList.add("active");
+            sidebar.style.transform = "translateX(0)";
+            overlay.style.display = "block";
+            overlay.style.position = "fixed";
+            overlay.style.inset = "0";
+            overlay.style.background = "rgba(0, 0, 0, 0.4)";
+            overlay.style.zIndex = "39";
+            document.body.style.overflow = "hidden";
+        };
+ 
+        const closeSidebar = () => {
+            sidebar.classList.remove("sidebar-open");
+            overlay.classList.remove("active");
+            if (isMobileView()) {
+                sidebar.style.transform = "translateX(-100%)";
+            }
+            overlay.style.display = "none";
+            document.body.style.overflow = "";
+        };
+ 
+        // يظبط حالة السايدبار الابتدائية حسب حجم الشاشة، وبيعاد ضبطها لو الشاشة اتغيرت
+        const applyResponsiveState = () => {
+            sidebar.style.transition = "transform 0.3s ease";
+            if (isMobileView()) {
+                if (!sidebar.classList.contains("sidebar-open")) {
+                    sidebar.style.transform = "translateX(-100%)";
+                }
+                overlay.style.display = sidebar.classList.contains("sidebar-open") ? "block" : "none";
+            } else {
+                sidebar.style.transform = "";
+                overlay.style.display = "none";
+                document.body.style.overflow = "";
+            }
+        };
+ 
+        applyResponsiveState();
+        window.addEventListener("resize", applyResponsiveState);
+ 
+        menuBtn.addEventListener("click", openSidebar);
+        closeBtn?.addEventListener("click", closeSidebar);
+        overlay.addEventListener("click", closeSidebar);
+ 
+        // اقفل السايدبار تلقائيًا لو ضغط على أي لينك جواه وهو في وضع الموبايل
+        document.querySelectorAll("#sidebar nav a").forEach(link => {
+            link.addEventListener("click", () => {
+                if (isMobileView()) closeSidebar();
+            });
+        });
+    }
+ 
     setViewMode(mode) {
         const gridBtn = document.getElementById("grid-view-btn");
         const listBtn = document.getElementById("list-view-btn");
         const container = document.querySelector("#all-recipes-section .grid");
         if (!container) return;
-
+ 
         if (mode === "grid") {
             gridBtn?.classList.add("bg-white", "shadow-sm");
             gridBtn?.querySelector("i")?.classList.replace("text-gray-500", "text-gray-700");
             listBtn?.classList.remove("bg-white", "shadow-sm");
             listBtn?.querySelector("i")?.classList.replace("text-gray-700", "text-gray-500");
-
+ 
             container.className = "grid grid-cols-4 gap-5";
             container.querySelectorAll(".recipe-card").forEach(card => {
                 card.classList.remove("flex", "flex-row", "h-40");
@@ -1613,7 +1665,7 @@ class NutriPlanApp {
             listBtn?.querySelector("i")?.classList.replace("text-gray-500", "text-gray-700");
             gridBtn?.classList.remove("bg-white", "shadow-sm");
             gridBtn?.querySelector("i")?.classList.replace("text-gray-700", "text-gray-500");
-
+ 
             container.className = "grid grid-cols-2 gap-4";
             container.querySelectorAll(".recipe-card").forEach(card => {
                 card.classList.add("flex", "flex-row", "h-40");
@@ -1622,10 +1674,10 @@ class NutriPlanApp {
                 card.querySelector(".relative > .absolute.bottom-3")?.classList.add("hidden");
             });
         }
-
+ 
         AppState.updateState({ viewMode: mode });
     }
-
+ 
     handleNavigation(e) {
         e.preventDefault();
         const label = e.currentTarget.querySelector("span")?.textContent?.toLowerCase() || "";
@@ -1636,20 +1688,20 @@ class NutriPlanApp {
         else if (label.includes("food log") || label.includes("log")) page = "foodlog";
         this.navigateTo(page);
     }
-
+ 
     handleGlobalClick(e) {
         const recipeCard = e.target.closest(".recipe-card");
         if (recipeCard) this.showMealDetail(recipeCard.dataset.mealId);
-
+ 
         const categoryCard = e.target.closest(".category-card");
         if (categoryCard) this.filterByCategory(categoryCard.dataset.category);
-
+ 
         const areaBtn = e.target.closest(".area-filter-btn");
         if (areaBtn) this.filterByArea(areaBtn.dataset.area);
-
+ 
         if (e.target.closest(".close-detail-btn")) this.closeMealDetail();
     }
-
+ 
     handleSearch(e) {
         const query = e.target.value.trim();
         clearTimeout(this.debounceTimer);
@@ -1658,17 +1710,17 @@ class NutriPlanApp {
             else if (query.length === 0) this.loadAllRecipes();
         }, 300);
     }
-
+ 
     async performSearch(query) {
         AppState.updateState({ isLoading: true, searchQuery: query });
         const grid = document.querySelector("#all-recipes-section .grid");
         if (grid) grid.innerHTML = Templates.createLoadingSpinner();
-
+ 
         try {
             const results = await MealDB.searchMealsByName(query);
             AppState.updateState({ meals: results, isLoading: false });
             this.renderRecipeGrid(results);
-
+ 
             const counter = document.querySelector("#all-recipes-section p.text-gray-600");
             if (counter) counter.textContent = `Showing ${results.length} recipes for "${query}"`;
         } catch (err) {
@@ -1676,22 +1728,22 @@ class NutriPlanApp {
             AppState.updateState({ isLoading: false, error: err.message });
         }
     }
-
+ 
     async loadInitialData() {
         try {
             const categories = await MealDB.getAllCategories();
             AppState.updateState({ categories });
-
+ 
             const areas = await MealDB.getAreaList();
             AppState.updateState({ areas });
-
+ 
             const meals = await MealDB.searchMealsByName("chicken");
             AppState.updateState({ meals });
         } catch (err) {
             console.error("Error loading initial data:", err);
         }
     }
-
+ 
     async loadAllRecipes() {
         const results = await MealDB.searchMealsByName("");
         if (results.length === 0) {
@@ -1703,18 +1755,18 @@ class NutriPlanApp {
             this.renderRecipeGrid(results);
         }
     }
-
+ 
     renderPage(page) {
         this.currentPage = page;
         const mainContent = document.getElementById("main-content");
         this.updateHeader(page);
-
+ 
         ["shopping-section", "settings-section", "products-section", "meal-detail-section", "foodlog-section"]
             .forEach(id => {
                 const el = document.getElementById(id);
                 if (el) el.style.display = "none";
             });
-
+ 
         switch (page) {
             case "meals": this.showMealsPage(); break;
             case "settings": this.showSettingsPage(); break;
@@ -1723,7 +1775,7 @@ class NutriPlanApp {
             case "meal-detail": this.showMealDetailPage(); break;
         }
     }
-
+ 
     updateHeader(page) {
         const titleEl = document.querySelector("#header h1");
         const subtitleEl = document.querySelector("#header p");
@@ -1737,7 +1789,7 @@ class NutriPlanApp {
         if (titleEl && headers[page]) titleEl.textContent = headers[page].title;
         if (subtitleEl && headers[page]) subtitleEl.textContent = headers[page].subtitle;
     }
-
+ 
     showMealsPage() {
         this.toggleSections(["search-filters-section", "meal-categories-section", "all-recipes-section"], true);
         this.toggleSections(["recipe-detail-modal", "nutritional-insights-section", "meal-planning-section", "community-section"], false);
@@ -1745,53 +1797,53 @@ class NutriPlanApp {
         this.renderRecipeGrid(AppState.getState().meals);
         this.renderAreaFilters();
     }
-
+ 
     toggleSections(ids, show) {
         ids.forEach(id => {
             const el = document.getElementById(id);
             if (el) el.style.display = show ? "" : "none";
         });
     }
-
+ 
     renderCategories() {
         const section = document.getElementById("meal-categories-section");
         if (!section) return;
         const grid = section.querySelector(".grid");
         if (!grid) return;
-
+ 
         grid.className = "grid grid-cols-6 gap-3";
         const categories = AppState.getState().categories || [];
         grid.innerHTML = categories.slice(0, 12).map(c => Templates.createCategoryCard(c)).join("");
     }
-
+ 
     renderRecipeGrid(meals) {
         const grid = document.querySelector("#all-recipes-section .grid");
         if (!grid) return;
-
+ 
         if (!meals || meals.length === 0) {
             grid.innerHTML = Templates.createEmptyState("No recipes found. Try a different search term.");
             return;
         }
-
+ 
         grid.innerHTML = meals.map(m => Templates.createMealCard(m)).join("");
         const counter = document.querySelector("#all-recipes-section p.text-gray-600");
         if (counter) counter.textContent = `Showing ${meals.length} recipes`;
     }
-
+ 
     renderAreaFilters() {
         const container = document.querySelector("#search-filters-section .flex.items-center.gap-3");
         if (!container) return;
-
+ 
         const areas = AppState.getState().areas || [];
         const selectedArea = AppState.getState().selectedArea;
         container.innerHTML = Templates.createAreaFilters(areas.slice(0, 10), selectedArea);
     }
-
+ 
     async filterByCategory(category) {
         AppState.updateState({ selectedCategory: category, isLoading: true });
         const grid = document.querySelector("#all-recipes-section .grid");
         if (grid) grid.innerHTML = Templates.createLoadingSpinner();
-
+ 
         try {
             const list = await MealDB.filterMealsByCategory(category);
             const fullMeals = await Promise.all(
@@ -1800,7 +1852,7 @@ class NutriPlanApp {
             const validMeals = fullMeals.filter(m => m);
             AppState.updateState({ meals: validMeals, isLoading: false });
             this.renderRecipeGrid(validMeals);
-
+ 
             const counter = document.querySelector("#all-recipes-section p.text-gray-600");
             if (counter) counter.textContent = `Showing ${validMeals.length} ${category} recipes`;
         } catch (err) {
@@ -1808,10 +1860,10 @@ class NutriPlanApp {
             AppState.updateState({ isLoading: false });
         }
     }
-
+ 
     async filterByArea(area) {
         AppState.updateState({ selectedArea: area, isLoading: true });
-
+ 
         document.querySelectorAll(".area-filter-btn").forEach(btn => {
             if (btn.dataset.area === area) {
                 btn.classList.add("bg-emerald-600", "text-white");
@@ -1821,10 +1873,10 @@ class NutriPlanApp {
                 btn.classList.add("bg-gray-100", "text-gray-700");
             }
         });
-
+ 
         const grid = document.querySelector("#all-recipes-section .grid");
         if (grid) grid.innerHTML = Templates.createLoadingSpinner();
-
+ 
         try {
             let meals;
             if (area) {
@@ -1834,10 +1886,10 @@ class NutriPlanApp {
             } else {
                 meals = await MealDB.searchMealsByName("chicken");
             }
-
+ 
             AppState.updateState({ meals, isLoading: false });
             this.renderRecipeGrid(meals);
-
+ 
             const counter = document.querySelector("#all-recipes-section p.text-gray-600");
             if (counter) counter.textContent = area ? `Showing ${meals.length} ${area} recipes` : `Showing ${meals.length} recipes`;
         } catch (err) {
@@ -1845,7 +1897,7 @@ class NutriPlanApp {
             AppState.updateState({ isLoading: false });
         }
     }
-
+ 
     async showMealDetail(mealId) {
         AppState.updateState({ selectedMealId: mealId, isLoading: true });
         try {
@@ -1862,14 +1914,14 @@ class NutriPlanApp {
         this.renderPage("meal-detail");
         window.scrollTo({ top: 0, behavior: "smooth" });
     }
-
+ 
     async showMealDetailPage() {
         this.toggleSections([
             "search-filters-section", "featured-recipes-section", "meal-categories-section",
             "all-recipes-section", "recipe-detail-modal", "nutritional-insights-section",
             "meal-planning-section", "community-section"
         ], false);
-
+ 
         let section = document.getElementById("meal-detail-section");
         if (!section) {
             section = document.createElement("section");
@@ -1880,7 +1932,7 @@ class NutriPlanApp {
             mainContent.insertBefore(section, footer);
         }
         section.style.display = "";
-
+ 
         const mealId = AppState.getState().selectedMealId;
         if (!mealId) {
             section.innerHTML = `
@@ -1895,14 +1947,14 @@ class NutriPlanApp {
             document.getElementById("back-to-meals-btn")?.addEventListener("click", () => this.navigateTo("meals"));
             return;
         }
-
+ 
         try {
             const meal = await MealDB.getMealById(mealId);
             if (!meal) throw new Error("Meal not found");
-
+ 
             const ingredients = MealDB.extractIngredients(meal);
             const instructions = MealDB.parseInstructions(meal.strInstructions);
-
+ 
             AppState.updateState({ selectedMeal: meal, isLoading: false });
             section.innerHTML = this.createMealDetailPageContent(meal, null, ingredients, instructions);
             this.setupMealDetailPageListeners(meal, ingredients);
@@ -1922,27 +1974,27 @@ class NutriPlanApp {
             document.getElementById("back-to-meals-btn")?.addEventListener("click", () => this.navigateTo("meals"));
         }
     }
-
+ 
     async loadNutritionData(meal, ingredients) {
         const container = document.getElementById("nutrition-facts-container");
         if (!container) return;
-
+ 
         try {
             const ingredientStrings = ingredients.map(i => `${i.measure} ${i.ingredient}`);
             const rawNutrition = await NutritionAPI.analyzeRecipe(meal.strMeal, ingredientStrings);
             const formatted = NutritionAPI.formatNutritionForDisplay(rawNutrition);
-
+ 
             const cache = AppState.getState().mealNutritionCache || {};
             cache[meal.idMeal] = formatted;
             AppState.updateState({ mealNutritionCache: cache });
-
+ 
             container.innerHTML = this.createNutritionContent(formatted);
-
+ 
             const heroCalories = document.getElementById("hero-calories");
             const heroServings = document.getElementById("hero-servings");
             if (heroCalories) heroCalories.textContent = `${formatted.caloriesPerServing} cal/serving`;
             if (heroServings) heroServings.textContent = `${formatted.servings} servings`;
-
+ 
             const logBtn = document.getElementById("log-meal-btn");
             if (logBtn) {
                 logBtn.disabled = false;
@@ -1961,22 +2013,22 @@ class NutriPlanApp {
                     </button>
                 </div>
             `;
-
+ 
             const heroCalories = document.getElementById("hero-calories");
             if (heroCalories) heroCalories.textContent = "N/A";
-
+ 
             const logBtn = document.getElementById("log-meal-btn");
             if (logBtn) {
                 logBtn.className = "flex items-center gap-2 px-6 py-3 bg-red-100 text-red-500 rounded-xl font-semibold cursor-not-allowed transition-all";
                 logBtn.title = 'Nutrition data failed to load. Click "Try Again" in the nutrition section.';
                 logBtn.innerHTML = `<i class="fa-solid fa-exclamation-triangle"></i><span>Unavailable</span>`;
             }
-
+ 
             document.getElementById("retry-nutrition-btn")?.addEventListener("click", () => {
                 container.innerHTML = this.createNutritionLoadingState();
                 const heroCal = document.getElementById("hero-calories");
                 if (heroCal) heroCal.textContent = "Calculating...";
-
+ 
                 const retryLogBtn = document.getElementById("log-meal-btn");
                 if (retryLogBtn) {
                     retryLogBtn.disabled = true;
@@ -1988,7 +2040,7 @@ class NutriPlanApp {
             });
         }
     }
-
+ 
     createNutritionLoadingState() {
         return `
             <div class="text-center py-8">
@@ -2007,58 +2059,58 @@ class NutriPlanApp {
             </div>
         `;
     }
-
+ 
     createNutritionContent(nutrition) {
         const bar = (colorClass, widthPct) =>
             `<div class="w-full bg-gray-100 rounded-full h-2"><div class="${colorClass} h-2 rounded-full" style="width: ${Math.min(widthPct, 100)}%"></div></div>`;
-
+ 
         return `
             <p class="text-sm text-gray-500 mb-4">Per serving</p>
-
+ 
             <div class="text-center py-4 mb-4 bg-linear-to-br from-emerald-50 to-teal-50 rounded-xl">
                 <p class="text-sm text-gray-600">Calories per serving</p>
                 <p class="text-4xl font-bold text-emerald-600">${nutrition.caloriesPerServing}</p>
                 <p class="text-xs text-gray-500 mt-1">Total: ${nutrition.totalCalories} cal</p>
             </div>
-
+ 
             <div class="space-y-4">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-2"><div class="w-3 h-3 rounded-full bg-emerald-500"></div><span class="text-gray-700">Protein</span></div>
                     <span class="font-bold text-gray-900">${nutrition.macros.protein.amount}g</span>
                 </div>
                 ${bar("bg-emerald-500", nutrition.macros.protein.dailyValue)}
-
+ 
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-2"><div class="w-3 h-3 rounded-full bg-blue-500"></div><span class="text-gray-700">Carbs</span></div>
                     <span class="font-bold text-gray-900">${nutrition.macros.carbs.amount}g</span>
                 </div>
                 ${bar("bg-blue-500", nutrition.macros.carbs.dailyValue)}
-
+ 
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-2"><div class="w-3 h-3 rounded-full bg-purple-500"></div><span class="text-gray-700">Fat</span></div>
                     <span class="font-bold text-gray-900">${nutrition.macros.fat.amount}g</span>
                 </div>
                 ${bar("bg-purple-500", nutrition.macros.fat.dailyValue)}
-
+ 
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-2"><div class="w-3 h-3 rounded-full bg-orange-500"></div><span class="text-gray-700">Fiber</span></div>
                     <span class="font-bold text-gray-900">${nutrition.macros.fiber.amount}g</span>
                 </div>
                 ${bar("bg-orange-500", nutrition.macros.fiber.dailyValue)}
-
+ 
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-2"><div class="w-3 h-3 rounded-full bg-pink-500"></div><span class="text-gray-700">Sugar</span></div>
                     <span class="font-bold text-gray-900">${nutrition.macros.sugar.amount}g</span>
                 </div>
                 ${bar("bg-pink-500", Math.round(nutrition.macros.sugar.amount / 50 * 100))}
-
+ 
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-2"><div class="w-3 h-3 rounded-full bg-red-500"></div><span class="text-gray-700">Saturated Fat</span></div>
                     <span class="font-bold text-gray-900">${nutrition.macros.saturatedFat.amount}g</span>
                 </div>
                 ${bar("bg-red-500", nutrition.macros.saturatedFat.dailyValue)}
             </div>
-
+ 
             <div class="mt-6 pt-6 border-t border-gray-100">
                 <h3 class="text-sm font-semibold text-gray-900 mb-3">Other</h3>
                 <div class="grid grid-cols-2 gap-3 text-sm">
@@ -2068,7 +2120,7 @@ class NutriPlanApp {
             </div>
         `;
     }
-
+ 
     createMealDetailPageContent(meal, nutrition, ingredients, instructions) {
         return `
             <div class="max-w-6xl mx-auto">
@@ -2076,7 +2128,7 @@ class NutriPlanApp {
                     <i class="fa-solid fa-arrow-left"></i>
                     <span>Back to Recipes</span>
                 </button>
-
+ 
                 <div class="bg-white rounded-2xl shadow-lg overflow-hidden mb-8">
                     <div class="relative h-80 md:h-96">
                         <img src="${meal.strMealThumb}" alt="${meal.strMeal}" class="w-full h-full object-cover"/>
@@ -2096,14 +2148,14 @@ class NutriPlanApp {
                         </div>
                     </div>
                 </div>
-
+ 
                 <div class="flex flex-wrap gap-3 mb-8">
                     <button id="log-meal-btn" class="flex items-center gap-2 px-6 py-3 bg-gray-300 text-gray-500 rounded-xl font-semibold cursor-not-allowed transition-all" data-meal-id="${meal.idMeal}" disabled title="Waiting for nutrition data...">
                         <i class="fa-solid fa-spinner fa-spin"></i>
                         <span>Calculating...</span>
                     </button>
                 </div>
-
+ 
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     <div class="lg:col-span-2 space-y-8">
                         <div class="bg-white rounded-2xl shadow-lg p-6">
@@ -2121,7 +2173,7 @@ class NutriPlanApp {
                                 `).join("")}
                             </div>
                         </div>
-
+ 
                         <div class="bg-white rounded-2xl shadow-lg p-6">
                             <h2 class="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
                                 <i class="fa-solid fa-shoe-prints text-emerald-600"></i>
@@ -2136,7 +2188,7 @@ class NutriPlanApp {
                                 `).join("")}
                             </div>
                         </div>
-
+ 
                         ${meal.strYoutube ? `
                         <div class="bg-white rounded-2xl shadow-lg p-6">
                             <h2 class="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
@@ -2155,7 +2207,7 @@ class NutriPlanApp {
                         </div>
                         ` : ""}
                     </div>
-
+ 
                     <div class="space-y-6">
                         <div class="bg-white rounded-2xl shadow-lg p-6 sticky top-24">
                             <h2 class="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
@@ -2166,7 +2218,7 @@ class NutriPlanApp {
                                 ${nutrition ? this.createNutritionContent(nutrition) : this.createNutritionLoadingState()}
                             </div>
                         </div>
-
+ 
                         ${meal.strSource ? `
                         <div class="bg-white rounded-2xl shadow-lg p-6">
                             <h3 class="text-sm font-semibold text-gray-900 mb-2">Recipe Source</h3>
@@ -2181,7 +2233,7 @@ class NutriPlanApp {
             </div>
         `;
     }
-
+ 
     setupMealDetailPageListeners(meal, ingredients) {
         document.getElementById("back-to-meals-btn")?.addEventListener("click", () => this.navigateTo("meals"));
         document.getElementById("add-to-plan-detail-btn")?.addEventListener("click", () => {
@@ -2190,12 +2242,12 @@ class NutriPlanApp {
         });
         document.getElementById("log-meal-btn")?.addEventListener("click", () => this.showLogMealModal(meal));
     }
-
+ 
     closeMealDetail() {
         this.navigateTo("meals");
         AppState.updateState({ selectedMeal: null, selectedMealId: null });
     }
-
+ 
     showNotification(message, type = "info") {
         const colors = { success: "bg-emerald-500", error: "bg-red-500", info: "bg-blue-500", warning: "bg-amber-500" };
         const toast = document.createElement("div");
@@ -2204,9 +2256,9 @@ class NutriPlanApp {
         document.body.appendChild(toast);
         setTimeout(() => toast.remove(), 3000);
     }
-
+ 
     handleStateChange(e) { /* hook متاح لأي تحديثات إضافية عند تغيّر الحالة */ }
-
+ 
     showSettingsPage() {
         this.toggleSections([
             "search-filters-section", "featured-recipes-section", "meal-categories-section",
@@ -2214,7 +2266,7 @@ class NutriPlanApp {
         ], false);
         this.renderSettingsSection();
     }
-
+ 
     renderSettingsSection() {
         let section = document.getElementById("settings-section");
         if (!section) {
@@ -2226,10 +2278,10 @@ class NutriPlanApp {
             mainContent.insertBefore(section, footer);
         }
         section.style.display = "";
-
+ 
         const settings = AppState.getState().userSettings;
         const activityLevels = ["sedentary", "light", "moderate", "active", "very_active"];
-
+ 
         section.innerHTML = `
             <div class="max-w-3xl mx-auto">
                 <div class="space-y-6">
@@ -2259,7 +2311,7 @@ class NutriPlanApp {
                             </div>
                         </div>
                     </div>
-
+ 
                     <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
                         <h3 class="text-lg font-bold text-gray-900 mb-1">Nutrition Goals</h3>
                         <p class="text-sm text-gray-500 mb-4">Set your daily nutrition targets</p>
@@ -2282,7 +2334,7 @@ class NutriPlanApp {
                             </div>
                         </div>
                     </div>
-
+ 
                     <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
                         <h3 class="text-lg font-bold text-gray-900 mb-1">Hydration</h3>
                         <p class="text-sm text-gray-500 mb-4">Set your water intake goals</p>
@@ -2297,7 +2349,7 @@ class NutriPlanApp {
                             </div>
                         </div>
                     </div>
-
+ 
                     <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
                         <h3 class="text-lg font-bold text-gray-900 mb-1">Activity Level</h3>
                         <p class="text-sm text-gray-500 mb-4">How active are you on a typical day?</p>
@@ -2310,12 +2362,12 @@ class NutriPlanApp {
                             `).join("")}
                         </div>
                     </div>
-
+ 
                     <button id="save-settings-btn" class="w-full py-4 bg-emerald-600 text-white rounded-xl font-bold hover:bg-emerald-700 transition-all flex items-center justify-center gap-2">
                         <i class="fa-solid fa-check"></i>
                         Save Settings
                     </button>
-
+ 
                     <div class="bg-red-50 rounded-2xl p-6 border border-red-200">
                         <h3 class="text-lg font-bold text-red-700 mb-1">Danger Zone</h3>
                         <p class="text-sm text-red-600 mb-4">These actions cannot be undone</p>
@@ -2326,10 +2378,10 @@ class NutriPlanApp {
                 </div>
             </div>
         `;
-
+ 
         this.setupSettingsListeners();
     }
-
+ 
     getActivityIcon(level) {
         const icons = {
             sedentary: "fa-couch",
@@ -2340,7 +2392,7 @@ class NutriPlanApp {
         };
         return icons[level] || "fa-person";
     }
-
+ 
     setupSettingsListeners() {
         document.querySelectorAll(".activity-level-btn").forEach(btn => {
             btn.addEventListener("click", () => {
@@ -2352,7 +2404,7 @@ class NutriPlanApp {
                 btn.classList.remove("bg-gray-100", "text-gray-700");
             });
         });
-
+ 
         document.getElementById("save-settings-btn")?.addEventListener("click", () => {
             const newSettings = {
                 age: parseInt(document.getElementById("setting-age")?.value) || 30,
@@ -2370,7 +2422,7 @@ class NutriPlanApp {
             AppState.updateUserSettings(newSettings);
             this.showNotification("Settings saved successfully!", "success");
         });
-
+ 
         document.getElementById("reset-data-btn")?.addEventListener("click", () => {
             if (confirm("Are you sure you want to reset all data? This cannot be undone.")) {
                 localStorage.clear();
@@ -2378,7 +2430,7 @@ class NutriPlanApp {
             }
         });
     }
-
+ 
     showProductsPage() {
         this.toggleSections([
             "search-filters-section", "featured-recipes-section", "meal-categories-section",
@@ -2386,7 +2438,7 @@ class NutriPlanApp {
         ], false);
         this.renderProductsSection();
     }
-
+ 
     async renderProductsSection() {
         let section = document.getElementById("products-section");
         if (!section) {
@@ -2398,15 +2450,15 @@ class NutriPlanApp {
             mainContent.insertBefore(section, footer);
         }
         section.style.display = "";
-
+ 
         const categories = await OpenFoodFacts.getPopularCategories();
-
+ 
         section.innerHTML = `
             <div class="max-w-7xl mx-auto">
                 <div class="bg-gradient-to-r from-emerald-600 to-teal-600 rounded-2xl p-6 mb-6 text-white">
                     <h2 class="text-2xl font-bold mb-2"><i class="fa-solid fa-barcode mr-2"></i>Product Search & Barcode Scanner</h2>
                     <p class="opacity-90 mb-4">Search for packaged food products to view nutrition information</p>
-
+ 
                     <div class="flex gap-3">
                         <div class="flex-1 relative">
                             <input type="text" id="product-search-input" placeholder="Search by product name (e.g., Cheerios, Nutella, Coca-Cola...)"
@@ -2415,13 +2467,13 @@ class NutriPlanApp {
                         </div>
                         <button id="search-product-btn" class="px-6 py-3.5 bg-white text-emerald-700 rounded-xl font-semibold hover:bg-gray-100 transition-all">Search</button>
                     </div>
-
+ 
                     <div class="flex items-center gap-4 mt-4">
                         <div class="flex-1 h-px bg-white/30"></div>
                         <span class="text-sm opacity-80">or</span>
                         <div class="flex-1 h-px bg-white/30"></div>
                     </div>
-
+ 
                     <div class="mt-4 flex gap-3">
                         <div class="flex-1 relative">
                             <input type="text" id="barcode-input" placeholder="Enter barcode number (e.g., 7613034626844)"
@@ -2433,7 +2485,7 @@ class NutriPlanApp {
                         </button>
                     </div>
                 </div>
-
+ 
                 <div class="flex items-center gap-4 mb-6">
                     <span class="text-sm font-medium text-gray-700">Filter by Nutri-Score:</span>
                     <div class="flex gap-2">
@@ -2445,22 +2497,22 @@ class NutriPlanApp {
                         <button class="nutri-score-filter px-4 py-2 rounded-lg text-sm font-bold transition-all bg-red-100 text-red-700 hover:bg-red-200" data-grade="e">E</button>
                     </div>
                 </div>
-
+ 
                 <div class="mb-6">
                     <h3 class="text-lg font-semibold text-gray-900 mb-3">Browse by Category</h3>
                     <div class="flex gap-3 overflow-x-auto pb-2">
                         ${categories.map(c => Templates.createProductCategoryButton(c)).join("")}
                     </div>
                 </div>
-
+ 
                 <div class="flex items-center justify-between mb-4">
                     <p id="products-count" class="text-sm text-gray-600">Search for products to see results</p>
                 </div>
-
+ 
                 <div class="grid grid-cols-4 gap-5" id="products-grid"></div>
-
+ 
                 <div id="products-loading" class="hidden py-12">${Templates.createLoadingSpinner()}</div>
-
+ 
                 <div id="products-empty" class="py-12">
                     <div class="text-center">
                         <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -2472,35 +2524,35 @@ class NutriPlanApp {
                 </div>
             </div>
         `;
-
+ 
         this.setupProductsListeners();
     }
-
+ 
     setupProductsListeners() {
         document.getElementById("search-product-btn")?.addEventListener("click", () => {
             const query = document.getElementById("product-search-input")?.value.trim();
             if (query) this.searchProducts(query);
         });
-
+ 
         document.getElementById("product-search-input")?.addEventListener("keypress", e => {
             if (e.key === "Enter") {
                 const query = e.target.value.trim();
                 if (query) this.searchProducts(query);
             }
         });
-
+ 
         document.getElementById("lookup-barcode-btn")?.addEventListener("click", () => {
             const barcode = document.getElementById("barcode-input")?.value.trim();
             if (barcode) this.lookupBarcode(barcode);
         });
-
+ 
         document.getElementById("barcode-input")?.addEventListener("keypress", e => {
             if (e.key === "Enter") {
                 const barcode = e.target.value.trim();
                 if (barcode) this.lookupBarcode(barcode);
             }
         });
-
+ 
         document.querySelectorAll(".nutri-score-filter").forEach(btn => {
             btn.addEventListener("click", () => {
                 document.querySelectorAll(".nutri-score-filter").forEach(b => b.classList.remove("ring-2", "ring-gray-900"));
@@ -2510,35 +2562,35 @@ class NutriPlanApp {
                 if (query) this.searchProducts(query, grade);
             });
         });
-
+ 
         document.querySelectorAll(".product-category-btn").forEach(btn => {
             btn.addEventListener("click", () => this.searchProductsByCategory(btn.dataset.category));
         });
-
+ 
         document.getElementById("products-grid")?.addEventListener("click", e => {
             const card = e.target.closest(".product-card");
             if (card) this.showProductDetail(card.dataset.barcode);
         });
     }
-
+ 
     async searchProducts(query, grade = "") {
         const grid = document.getElementById("products-grid");
         const loading = document.getElementById("products-loading");
         const empty = document.getElementById("products-empty");
         const counter = document.getElementById("products-count");
         if (!grid) return;
-
+ 
         loading.classList.remove("hidden");
         empty.classList.add("hidden");
         grid.innerHTML = "";
-
+ 
         try {
             const options = { searchTerms: query, pageSize: 24 };
             if (grade) options.nutritionGrade = grade;
-
+ 
             const result = await OpenFoodFacts.searchProducts(options);
             loading.classList.add("hidden");
-
+ 
             if (result.products.length > 0) {
                 grid.innerHTML = result.products.map(p => Templates.createProductCard(p)).join("");
                 counter.textContent = `Found ${result.count} products for "${query}"`;
@@ -2546,7 +2598,7 @@ class NutriPlanApp {
                 empty.classList.remove("hidden");
                 counter.textContent = `No products found for "${query}"`;
             }
-
+ 
             AppState.updateState({ searchedProducts: result.products });
         } catch (err) {
             console.error("Product search error:", err);
@@ -2556,22 +2608,22 @@ class NutriPlanApp {
             this.showNotification("Failed to search products. Please try again.", "error");
         }
     }
-
+ 
     async searchProductsByCategory(category) {
         const grid = document.getElementById("products-grid");
         const loading = document.getElementById("products-loading");
         const empty = document.getElementById("products-empty");
         const counter = document.getElementById("products-count");
         if (!grid) return;
-
+ 
         loading.classList.remove("hidden");
         empty.classList.add("hidden");
         grid.innerHTML = "";
-
+ 
         try {
             const result = await OpenFoodFacts.getProductsByCategory(category);
             loading.classList.add("hidden");
-
+ 
             if (result.products.length > 0) {
                 grid.innerHTML = result.products.map(p => Templates.createProductCard(p)).join("");
                 counter.textContent = `Found ${result.count} products in ${category.replace(/_/g, " ")}`;
@@ -2579,7 +2631,7 @@ class NutriPlanApp {
                 empty.classList.remove("hidden");
                 counter.textContent = `No products found in ${category.replace(/_/g, " ")}`;
             }
-
+ 
             AppState.updateState({ searchedProducts: result.products });
         } catch (err) {
             console.error("Category search error:", err);
@@ -2588,21 +2640,21 @@ class NutriPlanApp {
             this.showNotification("Failed to load category products.", "error");
         }
     }
-
+ 
     async lookupBarcode(barcode) {
         const loading = document.getElementById("products-loading");
         const grid = document.getElementById("products-grid");
         const empty = document.getElementById("products-empty");
         const counter = document.getElementById("products-count");
-
+ 
         loading.classList.remove("hidden");
         grid.innerHTML = "";
         empty.classList.add("hidden");
-
+ 
         try {
             const product = await OpenFoodFacts.getProductByBarcode(barcode);
             loading.classList.add("hidden");
-
+ 
             if (product) {
                 grid.innerHTML = Templates.createProductCard(product);
                 counter.textContent = `Found product: ${product.name}`;
@@ -2620,19 +2672,19 @@ class NutriPlanApp {
             this.showNotification("Failed to lookup barcode.", "error");
         }
     }
-
+ 
     async showProductDetail(barcode) {
         let product = AppState.getState().searchedProducts?.find(p => p.barcode === barcode);
         if (!product) product = await OpenFoodFacts.getProductByBarcode(barcode);
-
+ 
         if (!product) {
             this.showNotification("Product not found", "error");
             return;
         }
-
+ 
         const gradeInfo = OpenFoodFacts.getNutriScoreInfo(product.nutritionGrade);
         const novaInfo = OpenFoodFacts.getNovaGroupInfo(product.novaGroup);
-
+ 
         const modal = document.createElement("div");
         modal.className = "fixed inset-0 bg-black/50 flex items-center justify-center z-50";
         modal.id = "product-detail-modal";
@@ -2642,7 +2694,7 @@ class NutriPlanApp {
             </div>
         `;
         document.body.appendChild(modal);
-
+ 
         modal.querySelectorAll(".close-product-modal").forEach(btn => btn.addEventListener("click", () => modal.remove()));
         modal.addEventListener("click", e => { if (e.target === modal) modal.remove(); });
         modal.querySelector(".add-product-to-log")?.addEventListener("click", () => {
@@ -2650,15 +2702,15 @@ class NutriPlanApp {
             modal.remove();
         });
     }
-
+ 
     logFoodToDaily(product) {
         const todayKey = AppState.getTodayString();
         const dailyLog = AppState.getState().dailyLog || {};
-
+ 
         if (!dailyLog[todayKey]) {
             dailyLog[todayKey] = { totalCalories: 0, totalProtein: 0, totalCarbs: 0, totalFat: 0, meals: [] };
         }
-
+ 
         dailyLog[todayKey].totalCalories += Math.round(product.nutrition?.calories || 0);
         dailyLog[todayKey].totalProtein += Math.round(product.nutrition?.protein || 0);
         dailyLog[todayKey].totalCarbs += Math.round(product.nutrition?.carbs || 0);
@@ -2672,15 +2724,15 @@ class NutriPlanApp {
             nutrition: product.nutrition,
             loggedAt: new Date().toISOString()
         });
-
+ 
         AppState.updateState({ dailyLog }, true);
         this.showNotification(`${product.name} logged to your daily intake! 📝`, "success");
         this.updateFoodLogPage();
     }
-
+ 
     showLogMealModal(meal) {
         const cachedNutrition = AppState.getState().mealNutritionCache?.[meal.idMeal];
-
+ 
         const modal = document.createElement("div");
         modal.className = "fixed inset-0 bg-black/50 flex items-center justify-center z-50";
         modal.id = "log-meal-modal";
@@ -2693,7 +2745,7 @@ class NutriPlanApp {
                         <p class="text-gray-500 text-sm">${meal.strMeal}</p>
                     </div>
                 </div>
-
+ 
                 <div class="mb-6">
                     <label class="block text-sm font-semibold text-gray-700 mb-2">Number of Servings</label>
                     <div class="flex items-center gap-3">
@@ -2707,7 +2759,7 @@ class NutriPlanApp {
                         </button>
                     </div>
                 </div>
-
+ 
                 ${cachedNutrition ? `
                 <div class="bg-emerald-50 rounded-xl p-4 mb-6">
                     <p class="text-sm text-gray-600 mb-2">Estimated nutrition per serving:</p>
@@ -2723,7 +2775,7 @@ class NutriPlanApp {
                     <p class="text-sm text-gray-500 text-center">Nutrition information not available for this meal</p>
                 </div>
                 `}
-
+ 
                 <div class="flex gap-3">
                     <button id="cancel-log-meal" class="flex-1 py-3 bg-gray-100 text-gray-700 rounded-xl font-semibold hover:bg-gray-200 transition-all">Cancel</button>
                     <button id="confirm-log-meal" class="flex-1 py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 transition-all">
@@ -2733,46 +2785,46 @@ class NutriPlanApp {
             </div>
         `;
         document.body.appendChild(modal);
-
+ 
         const servingsInput = modal.querySelector("#meal-servings");
-
+ 
         modal.querySelector("#decrease-servings")?.addEventListener("click", () => {
             const value = parseFloat(servingsInput.value);
             if (value > 0.5) servingsInput.value = (value - 0.5).toFixed(1);
         });
-
+ 
         modal.querySelector("#increase-servings")?.addEventListener("click", () => {
             const value = parseFloat(servingsInput.value);
             if (value < 10) servingsInput.value = (value + 0.5).toFixed(1);
         });
-
+ 
         modal.querySelector("#cancel-log-meal")?.addEventListener("click", () => modal.remove());
-
+ 
         modal.querySelector("#confirm-log-meal")?.addEventListener("click", () => {
             const servings = parseFloat(servingsInput.value) || 1;
             const nutrition = AppState.getState().mealNutritionCache?.[meal.idMeal] || cachedNutrition;
             this.logMealToDaily(meal, servings, nutrition);
             modal.remove();
         });
-
+ 
         modal.addEventListener("click", e => { if (e.target === modal) modal.remove(); });
     }
-
+ 
     logMealToDaily(meal, servings, nutrition) {
         const todayKey = AppState.getTodayString();
         const dailyLog = AppState.getState().dailyLog || {};
-
+ 
         if (!dailyLog[todayKey]) {
             dailyLog[todayKey] = { totalCalories: 0, totalProtein: 0, totalCarbs: 0, totalFat: 0, meals: [] };
         }
-
+ 
         const entryNutrition = {
             calories: nutrition ? Math.round(nutrition.caloriesPerServing * servings) : 0,
             protein: nutrition ? Math.round((nutrition.macros?.protein?.amount || 0) * servings) : 0,
             carbs: nutrition ? Math.round((nutrition.macros?.carbs?.amount || 0) * servings) : 0,
             fat: nutrition ? Math.round((nutrition.macros?.fat?.amount || 0) * servings) : 0
         };
-
+ 
         dailyLog[todayKey].totalCalories += entryNutrition.calories;
         dailyLog[todayKey].totalProtein += entryNutrition.protein;
         dailyLog[todayKey].totalCarbs += entryNutrition.carbs;
@@ -2787,9 +2839,9 @@ class NutriPlanApp {
             nutrition: entryNutrition,
             loggedAt: new Date().toISOString()
         });
-
+ 
         AppState.updateState({ dailyLog }, true);
-
+ 
         Swal.fire({
             title: "Meal Logged!",
             html: `<p class="text-gray-600">${meal.strMeal} (${servings} serving${servings !== 1 ? "s" : ""}) has been added to your daily log.</p>
@@ -2799,10 +2851,10 @@ class NutriPlanApp {
             timer: 2000,
             showConfirmButton: false
         });
-
+ 
         this.updateFoodLogPage();
     }
-
+ 
     showFoodLogPage() {
         this.toggleSections([
             "search-filters-section", "featured-recipes-section", "meal-categories-section",
@@ -2810,7 +2862,7 @@ class NutriPlanApp {
         ], false);
         this.renderFoodLogSection();
     }
-
+ 
     renderFoodLogSection() {
         let section = document.getElementById("foodlog-section");
         if (!section) {
@@ -2822,13 +2874,13 @@ class NutriPlanApp {
             mainContent.insertBefore(section, footer);
         }
         section.style.display = "";
-
+ 
         const todaySummary = this.getTodayLogSummary();
         const weeklyData = this.getWeeklyLogData();
         const goals = AppState.getState().userGoals || {
             dailyCalories: 2000, dailyProtein: 50, dailyCarbs: 250, dailyFat: 65
         };
-
+ 
         section.innerHTML = `
             <div class="max-w-7xl mx-auto">
                 <div class="bg-linear-to-r from-indigo-600 to-purple-600 rounded-2xl p-6 mb-6 text-white">
@@ -2843,17 +2895,17 @@ class NutriPlanApp {
                         </div>
                     </div>
                 </div>
-
+ 
                 <div id="foodlog-today-section" class="bg-white rounded-2xl p-6 mb-6 border-2 border-gray-200">
                     <h3 class="text-lg font-bold text-gray-900 mb-4"><i class="fa-solid fa-fire text-orange-500 mr-2"></i>Today's Nutrition</h3>
-
+ 
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                         ${this.renderNutritionProgress("Calories", todaySummary.totalCalories, goals.dailyCalories, "kcal", "emerald")}
                         ${this.renderNutritionProgress("Protein", todaySummary.totalProtein, goals.dailyProtein, "g", "blue")}
                         ${this.renderNutritionProgress("Carbs", todaySummary.totalCarbs, goals.dailyCarbs, "g", "amber")}
                         ${this.renderNutritionProgress("Fat", todaySummary.totalFat, goals.dailyFat, "g", "purple")}
                     </div>
-
+ 
                     <div class="border-t border-gray-200 pt-4">
                         <div class="flex items-center justify-between mb-3">
                             <h4 class="text-sm font-semibold text-gray-700">Logged Items (${todaySummary.meals?.length || 0})</h4>
@@ -2866,7 +2918,7 @@ class NutriPlanApp {
                         ${this.renderLoggedItemsList(todaySummary.meals || [])}
                     </div>
                 </div>
-
+ 
                 <div class="bg-white rounded-2xl p-6 mb-6 border-2 border-gray-200">
                     <h3 class="text-lg font-bold text-gray-900 mb-4"><i class="fa-solid fa-calendar-week text-indigo-500 mr-2"></i>Weekly Overview</h3>
                     <div class="grid grid-cols-7 gap-2">
@@ -2883,7 +2935,7 @@ class NutriPlanApp {
                         `).join("")}
                     </div>
                 </div>
-
+ 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                     <div class="bg-white rounded-xl p-4 border-2 border-gray-200">
                         <div class="flex items-center gap-3">
@@ -2915,14 +2967,14 @@ class NutriPlanApp {
                 </div>
             </div>
         `;
-
+ 
         this.setupFoodLogListeners();
     }
-
+ 
     renderNutritionProgress(label, current, goal, unit, colorName) {
         const percentage = Math.min(Math.round(current / goal * 100), 100);
         const overGoal = current > goal;
-
+ 
         return `
             <div class="bg-gray-50 rounded-xl p-4">
                 <div class="flex items-center justify-between mb-2">
@@ -2939,7 +2991,7 @@ class NutriPlanApp {
             </div>
         `;
     }
-
+ 
     renderLoggedItemsList(items) {
         if (items.length === 0) {
             return `
@@ -2960,7 +3012,7 @@ class NutriPlanApp {
                 </div>
             `;
         }
-
+ 
         return `
             <div class="space-y-3 max-h-96 overflow-y-auto">
                 ${items.map((item, index) => `
@@ -3000,18 +3052,18 @@ class NutriPlanApp {
             </div>
         `;
     }
-
+ 
     getWeeklyLogData() {
         const dailyLog = AppState.getState().dailyLog || {};
         const today = new Date();
         const days = [];
-
+ 
         for (let i = 6; i >= 0; i--) {
             const day = new Date(today);
             day.setDate(today.getDate() - i);
             const dayKey = day.toISOString().split("T")[0];
             const dayLog = dailyLog[dayKey] || { totalCalories: 0, meals: [] };
-
+ 
             days.push({
                 dayName: day.toLocaleDateString("en-US", { weekday: "short" }),
                 date: day.getDate(),
@@ -3022,7 +3074,7 @@ class NutriPlanApp {
         }
         return days;
     }
-
+ 
     setupFoodLogListeners() {
         document.getElementById("clear-foodlog")?.addEventListener("click", () => {
             Swal.fire({
@@ -3042,7 +3094,7 @@ class NutriPlanApp {
                 }
             });
         });
-
+ 
         document.querySelectorAll(".remove-foodlog-item").forEach(btn => {
             btn.addEventListener("click", () => {
                 const index = parseInt(btn.dataset.index);
@@ -3051,41 +3103,41 @@ class NutriPlanApp {
             });
         });
     }
-
+ 
     updateFoodLogPage() {
         const section = document.getElementById("foodlog-section");
         if (section && section.style.display !== "none") this.renderFoodLogSection();
     }
-
+ 
     getTodayLogSummary() {
         const todayKey = AppState.getTodayString();
         return (AppState.getState().dailyLog || {})[todayKey] || {
             totalCalories: 0, totalProtein: 0, totalCarbs: 0, totalFat: 0, meals: []
         };
     }
-
+ 
     removeLoggedItem(index) {
         const todayKey = AppState.getTodayString();
         const dailyLog = AppState.getState().dailyLog || {};
         if (!dailyLog[todayKey] || !dailyLog[todayKey].meals[index]) return;
-
+ 
         const item = dailyLog[todayKey].meals[index];
         dailyLog[todayKey].totalCalories -= Math.round(item.nutrition?.calories || 0);
         dailyLog[todayKey].totalProtein -= Math.round(item.nutrition?.protein || 0);
         dailyLog[todayKey].totalCarbs -= Math.round(item.nutrition?.carbs || 0);
         dailyLog[todayKey].totalFat -= Math.round(item.nutrition?.fat || 0);
-
+ 
         dailyLog[todayKey].totalCalories = Math.max(0, dailyLog[todayKey].totalCalories);
         dailyLog[todayKey].totalProtein = Math.max(0, dailyLog[todayKey].totalProtein);
         dailyLog[todayKey].totalCarbs = Math.max(0, dailyLog[todayKey].totalCarbs);
         dailyLog[todayKey].totalFat = Math.max(0, dailyLog[todayKey].totalFat);
-
+ 
         dailyLog[todayKey].meals.splice(index, 1);
         AppState.updateState({ dailyLog }, true);
         this.showNotification("Item removed from log", "info");
         this.updateFoodLogPage();
     }
-
+ 
     clearTodayLog() {
         const todayKey = AppState.getTodayString();
         const dailyLog = AppState.getState().dailyLog || {};
@@ -3095,15 +3147,15 @@ class NutriPlanApp {
         this.updateFoodLogPage();
     }
 }
-
+ 
 /* ============ 7) بدء التشغيل ============ */
-
+ 
 document.addEventListener("DOMContentLoaded", () => {
     window.nutriPlanApp = new NutriPlanApp();
 });
-
+ 
 /* ============ 8) الرسوم البيانية (Plotly) - اختياري إذا كانت مكتبة Plotly محمّلة ============ */
-
+ 
 window.addEventListener("load", function () {
     setTimeout(() => {
         try {
@@ -3118,7 +3170,7 @@ window.addEventListener("load", function () {
         }
     }, 1000);
 });
-
+ 
 function renderDashboardCharts() {
     try {
         const macroData = [{
@@ -3130,7 +3182,7 @@ function renderDashboardCharts() {
             textposition: "inside",
             hovertemplate: "<b>%{label}</b><br>%{value}g<br>%{percent}<extra></extra>"
         }];
-
+ 
         const macroLayout = {
             title: { text: "", font: { size: 0 } },
             showlegend: true,
@@ -3139,9 +3191,9 @@ function renderDashboardCharts() {
             plot_bgcolor: "#ffffff",
             paper_bgcolor: "#ffffff"
         };
-
+ 
         Plotly.newPlot("macro-chart", macroData, macroLayout, { responsive: true, displayModeBar: false, displaylogo: false });
-
+ 
         const calorieData = [
             {
                 x: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
@@ -3159,7 +3211,7 @@ function renderDashboardCharts() {
                 hovertemplate: "<b>Target</b><br>%{y} calories<extra></extra>"
             }
         ];
-
+ 
         const calorieLayout = {
             title: { text: "", font: { size: 0 } },
             xaxis: { title: "Day of Week" },
@@ -3170,7 +3222,7 @@ function renderDashboardCharts() {
             showlegend: true,
             legend: { orientation: "h", y: -0.2 }
         };
-
+ 
         Plotly.newPlot("calorie-chart", calorieData, calorieLayout, { responsive: true, displayModeBar: false, displaylogo: false });
     } catch (err) {
         console.error("Initial chart rendering error:", err);
